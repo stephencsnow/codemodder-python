@@ -91,6 +91,9 @@ class LibcstResultTransformer(
     def leave_Assign(self, original_node, updated_node):
         return self._new_or_updated_node(original_node, updated_node)
 
+    def leave_Attribute(self, original_node, updated_node):
+        return self._new_or_updated_node(original_node, updated_node)
+
     def leave_ClassDef(
         self, original_node: cst.ClassDef, updated_node: cst.ClassDef
     ) -> cst.ClassDef:
@@ -174,6 +177,12 @@ class LibcstResultTransformer(
     def update_assign_rhs(self, updated_node: cst.Assign, rhs: str):
         value = cst.parse_expression(rhs)
         return updated_node.with_changes(value=value)
+
+    def update_attribute_value(self, updated_node: cst.Attribute, value: str):
+        return updated_node.with_changes(value=cst.parse_expression(value))
+
+    def update_attribute_attr(self, updated_node: cst.Attribute, attr: str):
+        return updated_node.with_changes(attr=cst.Name(value=attr))
 
     def parse_expression(self, expression: str):
         return cst.parse_expression(expression)
